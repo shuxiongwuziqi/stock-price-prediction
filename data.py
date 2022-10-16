@@ -1,76 +1,10 @@
-import os
-import random
-import time
 from collections import deque
 
 import numpy as np
 import pandas as pd
-import tensorflow as tf
 from sklearn import preprocessing
 from sklearn.model_selection import train_test_split
-from tensorflow.keras.callbacks import ModelCheckpoint, TensorBoard
-from tensorflow.keras.layers import LSTM, Bidirectional, Dense, Dropout
-from tensorflow.keras.models import Sequential
 from yahoo_fin import stock_info as si
-
-# set seed, so we can get the same results after rerunning several times
-np.random.seed(2018)
-tf.random.set_seed(2018)
-random.seed(2018)
-
-# create these folders if they does not exist
-if not os.path.isdir("results"):
-    os.mkdir("results")
-if not os.path.isdir("logs"):
-    os.mkdir("logs")
-if not os.path.isdir("data"):
-    os.mkdir("data")
-
-# Window size or the sequence length
-N_STEPS = 50
-# Lookup step, 1 is the next day
-LOOKUP_STEP = 15
-# whether to scale feature columns & output price as well
-SCALE = True
-scale_str = f"sc-{int(SCALE)}"
-# whether to shuffle the dataset
-SHUFFLE = True
-shuffle_str = f"sh-{int(SHUFFLE)}"
-# whether to split the training/testing set by date
-SPLIT_BY_DATE = False
-split_by_date_str = f"sbd-{int(SPLIT_BY_DATE)}"
-# test ratio size, 0.2 is 20%
-TEST_SIZE = 0.2
-# features to use
-FEATURE_COLUMNS = ["adjclose", "volume", "open", "high", "low"]
-# date now
-date_now = time.strftime("%Y-%m-%d")
-### model parameters
-N_LAYERS = 2
-# LSTM cell
-CELL = LSTM
-# 256 LSTM neurons
-UNITS = 256
-# 40% dropout
-DROPOUT = 0.4
-# whether to use bidirectional RNNs
-BIDIRECTIONAL = False
-### training parameters
-# mean absolute error loss
-# LOSS = "mae"
-# huber loss
-LOSS = "huber_loss"
-OPTIMIZER = "adam"
-BATCH_SIZE = 64
-EPOCHS = 500
-# Amazon stock market
-ticker = "2800.HK"
-ticker_data_filename = os.path.join("data", f"{ticker}_{date_now}.csv")
-# model name to save, making it as unique as possible based on parameters
-model_name = f"{date_now}_{ticker}-{shuffle_str}-{scale_str}-{split_by_date_str}-\
-{LOSS}-{OPTIMIZER}-{CELL.__name__}-seq-{N_STEPS}-step-{LOOKUP_STEP}-layers-{N_LAYERS}-units-{UNITS}"
-if BIDIRECTIONAL:
-    model_name += "-b"
 
 
 def shuffle_in_unison(a, b):
@@ -79,6 +13,7 @@ def shuffle_in_unison(a, b):
     np.random.shuffle(a)
     np.random.set_state(state)
     np.random.shuffle(b)
+
 
 def load_data(ticker, n_steps=50, scale=True, shuffle=True, lookup_step=1, split_by_date=True,
                 test_size=0.2, feature_columns=['adjclose', 'volume', 'open', 'high', 'low']):
@@ -177,51 +112,3 @@ def load_data(ticker, n_steps=50, scale=True, shuffle=True, lookup_step=1, split
     result["X_test"] = result["X_test"][:, :, :len(feature_columns)].astype(np.float32)
     return result
 
-def create_model(sequence_length, n_features, units=256, cell=LSTM, n_layers=2, dropout=0.3,
-                loss="mean_absolute_error", optimizer="rmsprop", bidirectional=False):
-    model = Sequential()
-    for i in range(n_layers):
-        if i == 0:
-            # first layer
-            if bidirectional:
-                model.add(Bidirectional(cell(units, return_sequences=True), batch_input_shape=(None, sequence_length, n_features)))
-            else:
-                model.add(cell(units, return_sequences=True, batch_input_shape=(None, sequence_length, n_features)))
-        elif i == n_layers - 1:
-            # last layer
-            if bidirectional:
-                model.add(Bidirectional(cell(units, return_sequences=False)))
-            else:
-                model.add(cell(units, return_sequences=False))
-        else:
-            # hidden layers
-            if bidirectional:
-                model.add(Bidirectional(cell(units, return_sequences=True)))
-            else:
-                model.add(cell(units, return_sequences=True))
-        # add dropout after each layer
-        model.add(Dropout(dropout))
-    model.add(Dense(1, activation="linear"))
-    model.compile(loss=loss, metrics=["mean_absolute_error"], optimizer=optimizer)
-    return model
-
-# load the data
-data = load_data(ticker, N_STEPS, scale=SCALE, split_by_date=SPLIT_BY_DATE, 
-                shuffle=SHUFFLE, lookup_step=LOOKUP_STEP, test_size=TEST_SIZE, 
-                feature_columns=FEATURE_COLUMNS)
-# save the dataframe
-data["df"].to_csv(ticker_data_filename)
-# construct the model
-model = create_model(N_STEPS, len(FEATURE_COLUMNS), loss=LOSS, units=UNITS, cell=CELL, n_layers=N_LAYERS,
-                    dropout=DROPOUT, optimizer=OPTIMIZER, bidirectional=BIDIRECTIONAL)
-# some tensorflow callbacks
-checkpointer = ModelCheckpoint(os.path.join("results", model_name + ".h5"), save_weights_only=True, save_best_only=True, verbose=1)
-tensorboard = TensorBoard(log_dir=os.path.join("logs", model_name))
-# train the model and save the weights whenever we see 
-# a new optimal model using ModelCheckpoint
-history = model.fit(data["X_train"], data["y_train"],
-                    batch_size=BATCH_SIZE,
-                    epochs=EPOCHS,
-                    validation_data=(data["X_test"], data["y_test"]),
-                    callbacks=[checkpointer, tensorboard],
-                    verbose=1)
