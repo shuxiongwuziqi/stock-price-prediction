@@ -6,7 +6,7 @@ from tensorflow.keras.layers import LSTM
 # Window size or the sequence length
 N_STEPS = 50
 # Lookup step, 1 is the next day
-LOOKUP_STEP = 15
+LOOKUP_STEP = 1
 # whether to scale feature columns & output price as well
 SCALE = True
 scale_str = f"sc-{int(SCALE)}"
@@ -41,7 +41,8 @@ OPTIMIZER = "adam"
 BATCH_SIZE = 64
 EPOCHS = 500
 # Amazon stock market
-ticker = pd.read_csv("data/2800.HK.csv")
+ticker = pd.read_csv("data/2800.HK.csv", index_col=0)
+ticker.index = pd.to_datetime(ticker.index, format = '%Y-%m-%d')
 # ticker = "2800.HK"
 # model name to save, making it as unique as possible based on parameters
 model_name = f"{date_now}_2800.HK-{shuffle_str}-{scale_str}-{split_by_date_str}-\

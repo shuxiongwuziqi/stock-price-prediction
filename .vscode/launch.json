@@ -11,6 +11,22 @@
             "program": "${cwd}/train.py",
             "console": "integratedTerminal",
             "justMyCode": false
+        },
+        {
+            "name": "predict",
+            "type": "python",
+            "request": "launch",
+            "program": "${cwd}/predict.py",
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "data",
+            "type": "python",
+            "request": "launch",
+            "program": "${cwd}/data.py",
+            "console": "integratedTerminal",
+            "justMyCode": true
         }
     ]
 }
