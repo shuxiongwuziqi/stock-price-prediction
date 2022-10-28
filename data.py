@@ -34,6 +34,7 @@ def load_data(ticker, n_steps=50, scale=True, shuffle=True, lookup_step=1, split
     if isinstance(ticker, str):
         # load it from yahoo_fin library
         df = si.get_data(ticker)
+        df.to_csv("data/{}.csv".format(ticker))
     elif isinstance(ticker, pd.DataFrame):
         # already loaded, use it directly
         df = ticker
@@ -112,3 +113,11 @@ def load_data(ticker, n_steps=50, scale=True, shuffle=True, lookup_step=1, split
     result["X_test"] = result["X_test"][:, :, :len(feature_columns)].astype(np.float32)
     return result
 
+
+if __name__ == "__main__":
+    from config import *
+    data = load_data(ticker, N_STEPS, scale=SCALE, split_by_date=SPLIT_BY_DATE, 
+                shuffle=SHUFFLE, lookup_step=LOOKUP_STEP, test_size=TEST_SIZE, 
+                feature_columns=FEATURE_COLUMNS)
+    data
+    

@@ -1,5 +1,6 @@
 import time
 
+import pandas as pd
 from tensorflow.keras.layers import LSTM
 
 # Window size or the sequence length
@@ -13,7 +14,7 @@ scale_str = f"sc-{int(SCALE)}"
 SHUFFLE = True
 shuffle_str = f"sh-{int(SHUFFLE)}"
 # whether to split the training/testing set by date
-SPLIT_BY_DATE = False
+SPLIT_BY_DATE = True
 split_by_date_str = f"sbd-{int(SPLIT_BY_DATE)}"
 # test ratio size, 0.2 is 20%
 TEST_SIZE = 0.2
@@ -40,9 +41,10 @@ OPTIMIZER = "adam"
 BATCH_SIZE = 64
 EPOCHS = 500
 # Amazon stock market
-ticker = "2800.HK"
+ticker = pd.read_csv("data/2800.HK.csv")
+# ticker = "2800.HK"
 # model name to save, making it as unique as possible based on parameters
-model_name = f"{date_now}_{ticker}-{shuffle_str}-{scale_str}-{split_by_date_str}-\
+model_name = f"{date_now}_2800.HK-{shuffle_str}-{scale_str}-{split_by_date_str}-\
 {LOSS}-{OPTIMIZER}-{CELL.__name__}-seq-{N_STEPS}-step-{LOOKUP_STEP}-layers-{N_LAYERS}-units-{UNITS}"
 if BIDIRECTIONAL:
     model_name += "-b"

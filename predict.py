@@ -18,7 +18,7 @@ def plot_graph(test_df):
     plt.xlabel("Days")
     plt.ylabel("Price")
     plt.legend(["Actual Price", "Predicted Price"])
-    plt.savefig('results/predict.jpg', dpi=600, bbox_inches='tight')
+    plt.savefig('results_10_17_10_10/predict.jpg', dpi=600, bbox_inches='tight')
 
 def get_final_df(model, data):
     """
@@ -79,7 +79,8 @@ def predict(model, data):
         predicted_price = prediction[0][0]
     return predicted_price
 
-model_path = "results/2022-10-13_2800.HK-sh-1-sc-1-sbd-0-huber_loss-adam-LSTM-seq-50-step-15-layers-2-units-256.h5"
+# model_path = "results/2022-10-13_2800.HK-sh-1-sc-1-sbd-0-huber_loss-adam-LSTM-seq-50-step-15-layers-2-units-256.h5"
+model_path = "results_10_17_10_10/2022-10-17_2800.HK-sh-1-sc-1-sbd-0-huber_loss-adam-LSTM-seq-50-step-15-layers-2-units-256.h5"
 model = create_model(N_STEPS, len(FEATURE_COLUMNS), loss=LOSS, units=UNITS, cell=CELL, n_layers=N_LAYERS,
                     dropout=DROPOUT, optimizer=OPTIMIZER, bidirectional=BIDIRECTIONAL)
 model.load_weights(model_path)
