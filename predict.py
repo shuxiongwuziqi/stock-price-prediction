@@ -13,7 +13,7 @@ def plot_graph(test_df):
     This function plots true close price along with predicted close price
     with blue and red colors respectively
     """
-    plt.figure(figsize=(16, 12))
+    plt.figure(figsize=(8, 6))
     plt.plot(test_df[f'true_adjclose_{LOOKUP_STEP}'], c='b',linewidth=1.0)
     plt.plot(test_df[f'adjclose_{LOOKUP_STEP}'], c='r',linewidth=1.0)
     plt.xlabel("Days")
@@ -46,6 +46,10 @@ def get_final_df(model, data):
     test_df[f"adjclose_{LOOKUP_STEP}"] = y_pred
     # add true future prices to the dataframe
     test_df[f"true_adjclose_{LOOKUP_STEP}"] = y_test
+    
+    # calculate the mean absolute error (inverse scaling)
+    mae = np.sum(np.abs(y_pred-y_test))/y_pred.size
+
     # sort the dataframe by date
     test_df.sort_index(inplace=True)
     final_df = test_df
@@ -63,7 +67,7 @@ def get_final_df(model, data):
                                     final_df[f"true_adjclose_{LOOKUP_STEP}"])
                                     # since we don't have profit for last sequence, add 0's
                                     )
-    return final_df
+    return final_df, mae
 
 def predict(model, data):
     # retrieve the last sequence from data
@@ -90,15 +94,11 @@ data = load_data(ticker, N_STEPS, scale=SCALE, split_by_date=SPLIT_BY_DATE,
                 feature_columns=FEATURE_COLUMNS)
 
 # evaluate the model
-loss, mae = model.evaluate(data["X_test"], data["y_test"], verbose=0)
-# calculate the mean absolute error (inverse scaling)
-if SCALE:
-    mean_absolute_error = data["column_scaler"]["adjclose"].inverse_transform([[mae]])[0][0]
-else:
-    mean_absolute_error = mae
+loss, _ = model.evaluate(data["X_test"], data["y_test"], verbose=0)
+
 
 # get the final dataframe for the testing set
-final_df = get_final_df(model, data)
+final_df, mae = get_final_df(model, data)
 plot_graph(final_df)
 
 # predict the future price
@@ -117,7 +117,7 @@ profit_per_trade = total_profit / len(final_df)
 # printing metrics
 print(f"Future price after {LOOKUP_STEP} days is {future_price:.2f}$")
 print(f"{LOSS} loss:", loss)
-print("Mean Absolute Error:", mean_absolute_error)
+print("Mean Absolute Error:", mae)
 print("Accuracy score:", accuracy_score)
 print("Total buy profit:", total_buy_profit)
 print("Total sell profit:", total_sell_profit)

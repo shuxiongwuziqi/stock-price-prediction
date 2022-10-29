@@ -1,3 +1,4 @@
+from keras.utils import plot_model
 from tensorflow.keras.layers import LSTM, Bidirectional, Dense, Dropout
 from tensorflow.keras.models import Sequential
 
@@ -29,3 +30,10 @@ def create_model(sequence_length, n_features, units=256, cell=LSTM, n_layers=2, 
     model.add(Dense(1, activation="linear"))
     model.compile(loss=loss, metrics=["mean_absolute_error"], optimizer=optimizer)
     return model
+
+
+if __name__ == "__main__": 
+    from config import *
+    model = create_model(N_STEPS, len(FEATURE_COLUMNS), loss=LOSS, units=UNITS, cell=CELL, n_layers=N_LAYERS,
+                    dropout=DROPOUT, optimizer=OPTIMIZER, bidirectional=BIDIRECTIONAL)
+    plot_model(model, to_file='results/model.png', show_shapes=True)

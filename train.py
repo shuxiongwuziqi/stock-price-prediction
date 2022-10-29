@@ -1,6 +1,7 @@
 import os
 import random
 
+import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
 from tensorflow.keras.callbacks import ModelCheckpoint, TensorBoard
@@ -40,3 +41,23 @@ history = model.fit(data["X_train"], data["y_train"],
                     validation_data=(data["X_test"], data["y_test"]),
                     callbacks=[checkpointer, tensorboard],
                     verbose=1)
+
+# summarize history for accuracy
+plt.plot(history.history['accuracy'])
+plt.plot(history.history['val_accuracy'])
+plt.title('model accuracy')
+plt.ylabel('accuracy')
+plt.xlabel('epoch')
+plt.legend(['train', 'test'], loc='upper left')
+plt.savefig('results/model_accuracy.jpg', dpi=1200, bbox_inches='tight')
+# plt.show()
+
+# summarize history for loss
+plt.plot(history.history['loss'])
+plt.plot(history.history['val_loss'])
+plt.title('model loss')
+plt.ylabel('loss')
+plt.xlabel('epoch')
+plt.legend(['train', 'test'], loc='upper left')
+plt.savefig('results/model loss.jpg', dpi=1200, bbox_inches='tight')
+# plt.show()

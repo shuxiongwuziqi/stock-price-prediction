@@ -4,7 +4,6 @@ import numpy as np
 import pandas as pd
 from sklearn import preprocessing
 from sklearn.model_selection import train_test_split
-from yahoo_fin import stock_info as si
 
 
 def shuffle_in_unison(a, b):
@@ -31,11 +30,7 @@ def load_data(ticker, n_steps=50, scale=True, shuffle=True, lookup_step=1, split
         feature_columns (list): the list of features to use to feed into the model, default is everything grabbed from yahoo_fin
     """
     # see if ticker is already a loaded stock from yahoo finance
-    if isinstance(ticker, str):
-        # load it from yahoo_fin library
-        df = si.get_data(ticker)
-        df.to_csv("data/{}.csv".format(ticker))
-    elif isinstance(ticker, pd.DataFrame):
+    if isinstance(ticker, pd.DataFrame):
         # already loaded, use it directly
         df = ticker
     else:

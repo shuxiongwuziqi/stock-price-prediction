@@ -10,7 +10,7 @@
             "request": "launch",
             "program": "${cwd}/train.py",
             "console": "integratedTerminal",
-            "justMyCode": false
+            "justMyCode": true
         },
         {
             "name": "predict",
@@ -25,6 +25,14 @@
             "type": "python",
             "request": "launch",
             "program": "${cwd}/data.py",
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "model",
+            "type": "python",
+            "request": "launch",
+            "program": "${cwd}/model.py",
             "console": "integratedTerminal",
             "justMyCode": true
         }

@@ -28,8 +28,8 @@ N_LAYERS = 2
 CELL = LSTM
 # 256 LSTM neurons
 UNITS = 256
-# 40% dropout
-DROPOUT = 0.4
+# 50% dropout
+DROPOUT = 0.5
 # whether to use bidirectional RNNs
 BIDIRECTIONAL = False
 ### training parameters
