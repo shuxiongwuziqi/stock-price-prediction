@@ -1,4 +1,4 @@
-import os
+import glob
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -83,7 +83,8 @@ def predict(model, data):
         predicted_price = prediction[0][0]
     return predicted_price
 
-model_path = "results/2022-10-28_2800.HK-sh-1-sc-1-sbd-1-huber_loss-adam-LSTM-seq-50-step-1-layers-2-units-256.h5"
+
+model_path = glob.glob("results/{}.h5".format(model_name))[0]
 model = create_model(N_STEPS, len(FEATURE_COLUMNS), loss=LOSS, units=UNITS, cell=CELL, n_layers=N_LAYERS,
                     dropout=DROPOUT, optimizer=OPTIMIZER, bidirectional=BIDIRECTIONAL)
 model.load_weights(model_path)
