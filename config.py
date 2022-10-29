@@ -38,7 +38,7 @@ BIDIRECTIONAL = False
 # huber loss
 LOSS = "huber_loss"
 OPTIMIZER = "adam"
-BATCH_SIZE = 64
+BATCH_SIZE = 256
 EPOCHS = 500
 # Amazon stock market
 ticker = pd.read_csv("data/2800.HK.csv", index_col=0)

@@ -42,15 +42,15 @@ history = model.fit(data["X_train"], data["y_train"],
                     callbacks=[checkpointer, tensorboard],
                     verbose=1)
 
-# summarize history for accuracy
-plt.plot(history.history['accuracy'])
-plt.plot(history.history['val_accuracy'])
-plt.title('model accuracy')
-plt.ylabel('accuracy')
+# summarize history for mae
+plt.plot(history.history['mean_absolute_error'])
+plt.plot(history.history['val_mean_absolute_error'])
+plt.title('model mean absolute error')
+plt.ylabel('mae')
 plt.xlabel('epoch')
 plt.legend(['train', 'test'], loc='upper left')
-plt.savefig('results/model_accuracy.jpg', dpi=1200, bbox_inches='tight')
-# plt.show()
+plt.savefig('results/model_mae.jpg', dpi=600, bbox_inches='tight')
+plt.show()
 
 # summarize history for loss
 plt.plot(history.history['loss'])
@@ -59,5 +59,5 @@ plt.title('model loss')
 plt.ylabel('loss')
 plt.xlabel('epoch')
 plt.legend(['train', 'test'], loc='upper left')
-plt.savefig('results/model loss.jpg', dpi=1200, bbox_inches='tight')
-# plt.show()
+plt.savefig('results/model_loss.jpg', dpi=600, bbox_inches='tight')
+plt.show()
