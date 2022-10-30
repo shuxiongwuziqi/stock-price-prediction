@@ -4,7 +4,7 @@ import pandas as pd
 from tensorflow.keras.layers import LSTM
 
 # Window size or the sequence length
-N_STEPS = 50
+N_STEPS = 30
 # Lookup step, 1 is the next day
 LOOKUP_STEP = 1
 # whether to scale feature columns & output price as well
@@ -28,15 +28,15 @@ N_LAYERS = 2
 CELL = LSTM
 # 256 LSTM neurons
 UNITS = 256
-# 50% dropout
-DROPOUT = 0.5
+# 10% dropout
+DROPOUT = 0.1
 # whether to use bidirectional RNNs
 BIDIRECTIONAL = False
 ### training parameters
 # mean absolute error loss
-# LOSS = "mae"
+LOSS = "mae"
 # huber loss
-LOSS = "huber_loss"
+# LOSS = "huber_loss"
 OPTIMIZER = "adam"
 BATCH_SIZE = 256
 EPOCHS = 500
