@@ -31,7 +31,7 @@ data = load_data(ticker, N_STEPS, scale=SCALE, split_by_date=SPLIT_BY_DATE,
 model = create_model(N_STEPS, len(FEATURE_COLUMNS), loss=LOSS, units=UNITS, cell=CELL, n_layers=N_LAYERS,
                     dropout=DROPOUT, optimizer=OPTIMIZER, bidirectional=BIDIRECTIONAL)
 # some tensorflow callbacks
-checkpointer = ModelCheckpoint(os.path.join("results", model_name + ".h5"), save_weights_only=True, save_best_only=True, verbose=1)
+checkpointer = ModelCheckpoint(os.path.join("results", model_name + ".h5"), save_best_only=True, verbose=1)
 tensorboard = TensorBoard(log_dir=os.path.join("logs", model_name))
 # train the model and save the weights whenever we see 
 # a new optimal model using ModelCheckpoint
