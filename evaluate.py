@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from tensorflow.keras.models import load_model
 
-from config import FEATURE_COLUMNS, TEST_SIZE
+from config import FEATURE_COLUMNS, TEST_SIZE, ticker
 from data import load_data
 
 
@@ -88,11 +88,16 @@ def predict(model, data, N_STEPS, SCALE):
 model_paths = glob.glob("results/*.h5")
 print(model_paths)
 i = input("the model you want to evaluate (input index): ")
-_,ticker,SHUFFLE,SCALE,SPLIT_BY_DATE,LOSS,OPTIMIZER,CELLNAME,N_STEPS,LOOKUP_STEP,N_LAYERS,UNITS = \
+_,_,SHUFFLE,SCALE,SPLIT_BY_DATE,LOSS,OPTIMIZER,CELLNAME,N_STEPS,LOOKUP_STEP,N_LAYERS,UNITS = \
     re.findall("(\d{4}-\d{2}-\d{2})_(.+?)-sh-(\d)-sc-(\d)-sbd-(\d)-(.+?)-(.+?)-(.+?)-seq-(\d+)-step-(\d+)-layers-(\d+)-units-(\d+)", model_paths[int(i)])[0]
+SHUFFLE=bool(SHUFFLE)
+SCALE=bool(SCALE)
+SPLIT_BY_DATE=bool(SPLIT_BY_DATE)
+N_STEPS=int(N_STEPS)
+LOOKUP_STEP=int(LOOKUP_STEP)
+N_LAYERS=int(N_LAYERS)
+UNITS=int(UNITS)
 model = load_model(model_paths[0])
-
-from config import FEATURE_COLUMNS
 
 # load the data
 data = load_data(ticker, N_STEPS, scale=SCALE, split_by_date=SPLIT_BY_DATE, 
