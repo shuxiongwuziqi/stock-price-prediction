@@ -32,7 +32,7 @@ def load_data(ticker, n_steps=50, scale=True, shuffle=True, lookup_step=1, split
     # see if ticker is already a loaded stock from yahoo finance
     if isinstance(ticker, pd.DataFrame):
         # already loaded, use it directly
-        df = ticker
+        df = ticker.copy()
     else:
         raise TypeError("ticker can be either a str or a `pd.DataFrame` instances")
     # this will contain all the elements we want to return from this function
