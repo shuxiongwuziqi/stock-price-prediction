@@ -3,6 +3,7 @@ import re
 
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 from tensorflow.keras.models import load_model
 
 from config import FEATURE_COLUMNS, TEST_SIZE, ticker
@@ -21,7 +22,7 @@ def plot_graph(test_df, LOOKUP_STEP):
     plt.ylabel("Price")
     plt.legend(["Actual Price", "Predicted Price"])
     plt.savefig('results/predict.jpg', dpi=1200, bbox_inches='tight')
-    plt.show()
+    # plt.show()
 
 def get_final_df(model, data, SCALE, LOOKUP_STEP):
     """
@@ -86,46 +87,54 @@ def predict(model, data, N_STEPS, SCALE):
 
 
 model_paths = glob.glob("results/*.h5")
-print(model_paths)
-i = input("the model you want to evaluate (input index): ")
-_,_,SHUFFLE,SCALE,SPLIT_BY_DATE,LOSS,OPTIMIZER,CELLNAME,N_STEPS,LOOKUP_STEP,N_LAYERS,UNITS = \
-    re.findall("(\d{4}-\d{2}-\d{2})_(.+?)-sh-(\d)-sc-(\d)-sbd-(\d)-(.+?)-(.+?)-(.+?)-seq-(\d+)-step-(\d+)-layers-(\d+)-units-(\d+)", model_paths[int(i)])[0]
-SHUFFLE=bool(SHUFFLE)
-SCALE=bool(SCALE)
-SPLIT_BY_DATE=bool(SPLIT_BY_DATE)
-N_STEPS=int(N_STEPS)
-LOOKUP_STEP=int(LOOKUP_STEP)
-N_LAYERS=int(N_LAYERS)
-UNITS=int(UNITS)
-model = load_model(model_paths[0])
+results = []
+for i in range(len(model_paths)):
+    path = model_paths[i]
+    print(path)
+    _,_,SHUFFLE,SCALE,SPLIT_BY_DATE,LOSS,OPTIMIZER,CELLNAME,N_STEPS,LOOKUP_STEP,N_LAYERS,UNITS = \
+        re.findall("(\d{4}-\d{2}-\d{2})_(.+?)-sh-(\d)-sc-(\d)-sbd-(\d)-(.+?)-(.+?)-(.+?)-seq-(\d+)-step-(\d+)-layers-(\d+)-units-(\d+)", path)[0]
+    SHUFFLE=bool(int(SHUFFLE))
+    SCALE=bool(int(SCALE))
+    SPLIT_BY_DATE=bool(int(SPLIT_BY_DATE))
+    N_STEPS=int(N_STEPS)
+    LOOKUP_STEP=int(LOOKUP_STEP)
+    N_LAYERS=int(N_LAYERS)
+    UNITS=int(UNITS)
+    model = load_model(path)
 
-# load the data
-data = load_data(ticker, N_STEPS, scale=SCALE, split_by_date=SPLIT_BY_DATE, 
-                shuffle=SHUFFLE, lookup_step=LOOKUP_STEP, test_size=TEST_SIZE, 
-                feature_columns=FEATURE_COLUMNS)
+    # load the data
+    data = load_data(ticker, N_STEPS, scale=SCALE, split_by_date=SPLIT_BY_DATE, 
+                    shuffle=SHUFFLE, lookup_step=LOOKUP_STEP, test_size=TEST_SIZE, 
+                    feature_columns=FEATURE_COLUMNS)
 
-# get the final dataframe for the testing set
-final_df, mae = get_final_df(model, data, SCALE, LOOKUP_STEP)
-plot_graph(final_df, LOOKUP_STEP)
+    # get the final dataframe for the testing set
+    final_df, mae = get_final_df(model, data, SCALE, LOOKUP_STEP)
+    plot_graph(final_df, LOOKUP_STEP)
 
-# predict the future price
-future_price = predict(model, data, N_STEPS, SCALE)
+    # predict the future price
+    future_price = predict(model, data, N_STEPS, SCALE)
 
-# we calculate the accuracy by counting the number of positive profits
-accuracy_score = (len(final_df[final_df['sell_profit'] > 0]) + len(final_df[final_df['buy_profit'] > 0])) / len(final_df)
-# calculating total buy & sell profit
-total_buy_profit  = final_df["buy_profit"].sum()
-total_sell_profit = final_df["sell_profit"].sum()
-# total profit by adding sell & buy together
-total_profit = total_buy_profit + total_sell_profit
-# dividing total profit by number of testing samples (number of trades)
-profit_per_trade = total_profit / len(final_df)
+    # we calculate the accuracy by counting the number of positive profits
+    accuracy_score = (len(final_df[final_df['sell_profit'] > 0]) + len(final_df[final_df['buy_profit'] > 0])) / len(final_df)
+    # calculating total buy & sell profit
+    total_buy_profit  = final_df["buy_profit"].sum()
+    total_sell_profit = final_df["sell_profit"].sum()
+    # total profit by adding sell & buy together
+    total_profit = total_buy_profit + total_sell_profit
+    # dividing total profit by number of testing samples (number of trades)
+    profit_per_trade = total_profit / len(final_df)
 
-# printing metrics
-print(f"Future price after {LOOKUP_STEP} days is {future_price:.2f}$")
-print("Mean Absolute Error:", mae)
-print("Accuracy score:", accuracy_score)
-print("Total buy profit:", total_buy_profit)
-print("Total sell profit:", total_sell_profit)
-print("Total profit:", total_profit)
-print("Profit per trade:", profit_per_trade)
+    # printing metrics
+    print(f"Future price after {LOOKUP_STEP} days is {future_price:.2f}$")
+    print("Mean Absolute Error:", mae)
+    print("Accuracy score:", accuracy_score)
+    print("Total buy profit:", total_buy_profit)
+    print("Total sell profit:", total_sell_profit)
+    print("Total profit:", total_profit)
+    print("Profit per trade:", profit_per_trade)
+    result = [N_STEPS, LOOKUP_STEP,SCALE,SHUFFLE,SPLIT_BY_DATE,N_LAYERS, mae, accuracy_score, total_buy_profit, total_sell_profit, total_profit, profit_per_trade]
+    results.append(result)
+    
+pd = pd.DataFrame(results, columns=["N_STEPS","LOOKUP_STEP","SCALE","SHUFFLE","SPLIT_BY_DATE","N_LAYERS","mae",\
+     "accuracy_score", "total_buy_profit", "total_sell_profit", "total_profit", "profit_per_trade"])
+pd.to_csv("data/compare_model.csv")

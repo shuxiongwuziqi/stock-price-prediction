@@ -56,4 +56,4 @@ cerebro.addstrategy(SmaCross)  # Add the trading strategy
 print('Starting Portfolio Value: %.2f' % cerebro.broker.getvalue())
 cerebro.run()  # run it all
 print('Final Portfolio Value: %.2f' % cerebro.broker.getvalue())
-cerebro.plot()  # and plot it with a single command
+# cerebro.plot()  # and plot it with a single command
