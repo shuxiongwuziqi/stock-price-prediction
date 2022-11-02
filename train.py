@@ -1,5 +1,4 @@
 import os
-import random
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -9,11 +8,6 @@ from tensorflow.keras.callbacks import ModelCheckpoint, TensorBoard
 from config import *
 from data import load_data
 from model import create_model
-
-# set seed, so we can get the same results after rerunning several times
-np.random.seed(2018)
-tf.random.set_seed(2018)
-random.seed(2018)
 
 # create these folders if they does not exist
 if not os.path.isdir("results"):
