@@ -103,13 +103,13 @@ for i in range(len(model_paths)):
     model = load_model(path)
 
     # load the data
-    data = load_data(ticker, N_STEPS, scale=SCALE, split_by_date=SPLIT_BY_DATE, 
+    data = load_data(ticker, N_STEPS, scale=SCALE, split_by_date=True, 
                     shuffle=SHUFFLE, lookup_step=LOOKUP_STEP, test_size=TEST_SIZE, 
                     feature_columns=FEATURE_COLUMNS)
 
     # get the final dataframe for the testing set
     final_df, mae = get_final_df(model, data, SCALE, LOOKUP_STEP)
-    plot_graph(final_df, LOOKUP_STEP)
+    # plot_graph(final_df, LOOKUP_STEP)
 
     # predict the future price
     future_price = predict(model, data, N_STEPS, SCALE)
