@@ -12,8 +12,8 @@ class bcolors:
     ENDC = '\033[0m'
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
-rate = 0.0
-rate2 = 0.0
+rate = 0.9
+rate2 = 1
 
 # Create a subclass of Strategy to define the indicators and logic
 class myStrategy(bt.Strategy):
@@ -55,11 +55,11 @@ class myStrategy(bt.Strategy):
         global rate
         if self.data_predicted > self.datas[0].close:
             # calculate the max number of shares ('all-in')
-            size = int(self.broker.getcash() / self.datas[0].close)
+            size = int(self.broker.getcash() / self.datas[0].close * rate)
             if size > 0:
                 # buy order
                 # self.log(f'BUY CREATED --- Size: {size}, Cash: {self.broker.getcash():.2f}, Open: {self.data_open[0]}, Close: {self.data_close[0]}')
-                self.buy(size=size*rate-1)
+                self.buy(size=size-1)
         if self.data_predicted < self.datas[0].close and self.position:
             # sell order
             size = self.position.size * rate2
