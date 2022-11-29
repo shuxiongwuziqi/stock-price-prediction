@@ -98,11 +98,13 @@ if __name__ == "__main__":
     import matplotlib.pyplot as plt
     import numpy as np
     import pandas as pd
-    prices = pd.read_csv("predicted_data/RFpredicted-2800.HK-random-forest.csv", index_col=0)
+    prices = pd.read_csv("predicted_data/2800result_Adaboost.csv", index_col=0)
     prices.index = pd.to_datetime(prices.index, format = '%Y-%m-%d')
     results = []
     X = []
     Y = []
+    rate = 0
+    rate2 = 0
     for i in range(10):
         rate+=0.097
         rate2=0
@@ -115,11 +117,12 @@ if __name__ == "__main__":
     max_index = np.argmax(results)
     print(f"buy rate: {X[max_index]} and sell rate: {Y[max_index]} have max profit: {results[max_index]}.")
     
-    # ax = plt.axes(projection='3d')
-    # ax.scatter3D(X, Y, results,c=results)
-    # ax.set_title('3d Scatter plot')
-    # ax.set_xlabel("buy rate")
-    # ax.set_ylabel("sell rate")
-    # plt.show()
+    ax = plt.axes(projection='3d')
+    ax.scatter3D(X, Y, results,c=results)
+    ax.set_title('trading strategy')
+    ax.set_xlabel("buy rate")
+    ax.set_ylabel("sell rate")
+    ax.set_zlabel("return")
+    plt.show()
     
     
